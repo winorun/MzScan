@@ -4,18 +4,24 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(AUTOUIC_OPTIONS mainwindow.ui)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
+SET(CMAKE_AUTOMOC ON)
 
 # Find the Qt library
-find_package(Qt5Widgets)
-#find_package(Qt5Winextras)
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Widgets REQUIRED)
 
-set(SOURCES  main.cpp
+FILE(GLOB ProjectFormsGui "*.ui")
+FILE(GLOB ProjectHeaders "headers/*.h")
+set(ProjectSources  main.cpp
         myimageviewer.cpp
         mainwindow.cpp
 )
+
+QT5_WRAP_UI(ProjectFormsMoc ${ProjectFormsGui})
+
 include_directories("headers/")
 # Tell CMake to create the helloworld executable
-add_executable(${PROJECT_NAME} WIN32 ${SOURCES})
+add_executable(${PROJECT_NAME} WIN32 ${ProjectSources} ${ProjectHeaders} ${ProjectFormsMoc})
 
 # Use the Widgets module from Qt 5.
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets)

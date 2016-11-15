@@ -16,7 +16,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 signals:
-  void valueScannerChanged(const QString &text);
+  //void valueScannerChanged(const QString &text);
 private slots:
     void on_actionFullScreen_triggered(bool checked);
     void on_actionRusssia_triggered();

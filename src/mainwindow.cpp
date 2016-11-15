@@ -1,4 +1,4 @@
-#include "headers/mainwindow.h"
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QImage>
 #include <QPixmap>
@@ -12,7 +12,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
-{/*
+{
     ui->setupUi(this);
     {
 //        QLabel *lbl=&QLabel(" ");//new QLabel(QString(TWAIN_SourceName()),this);
@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(ui->pushButton,SIGNAL(clicked(bool)),this,SLOT(on_action_Next_Page_triggered()));
     this->connect(ui->pushButton_NextNumber,SIGNAL(clicked(bool)),this,SLOT(on_actionNext_Namber_triggered()));
     this->connect(ui->pushButton_Rescan,SIGNAL(clicked(bool)),this,SLOT(on_action_Rescan_triggered()));
-*/
+
     }
 
 MainWindow::~MainWindow()
@@ -80,47 +80,47 @@ void MainWindow::on_action_Rescan_triggered()
 
 void MainWindow::on_action_About_triggered()
 {
-//    QString str="Программа предназначена для сканирования журналов и газет.\n каталог по умолчанию" + QDir::currentPath();
-//    QMessageBox::about(this, "О программе", str);
+    QString str="Программа предназначена для сканирования журналов и газет.\n каталог по умолчанию" + QDir::currentPath();
+    QMessageBox::about(this, "О программе", str);
 }
 
 void MainWindow::on_action_Select_scanner_triggered()
 {
     //TWAIN_SelectImageSource(0);
     static QString select= "";//QString(TWAIN_SourceName());
-    emit valueScannerChanged(select);
+    //emit valueScannerChanged(select);
 }
 
 
 void MainWindow::on_action_Next_Page_triggered()
 {
-//    if(!ui->checkBox->isChecked()){
-//        ui->spinBoxPage->stepDown();
-//        if(ui->spinBoxPage->value()==0)
-//        {
-//            ui->spinBoxNumber->stepDown();
-//            ui->spinBoxPage->setValue(ui->spinBoxMax->value());
-//        }
-//    }else{
-//       ui->spinBoxPage->stepUp();
-//    }
-//    this->on_action_Rescan_triggered();
+    if(!ui->checkBox->isChecked()){
+        ui->spinBoxPage->stepDown();
+        if(ui->spinBoxPage->value()==0)
+        {
+            ui->spinBoxNumber->stepDown();
+            ui->spinBoxPage->setValue(ui->spinBoxMax->value());
+        }
+    }else{
+       ui->spinBoxPage->stepUp();
+    }
+    this->on_action_Rescan_triggered();
 }
 
 void MainWindow::on_actionNext_Namber_triggered()
 {
-//    if(!ui->checkBox->isChecked()){
-//       ui->spinBoxNumber->stepDown();
-//       ui->spinBoxPage->setValue(ui->spinBoxMax->value());
-//    }else{
-//        ui->spinBoxNumber->stepUp();
-//        ui->spinBoxPage->setValue(1); // 1 - this is fist page
-//    }
+    if(!ui->checkBox->isChecked()){
+       ui->spinBoxNumber->stepDown();
+       ui->spinBoxPage->setValue(ui->spinBoxMax->value());
+    }else{
+        ui->spinBoxNumber->stepUp();
+        ui->spinBoxPage->setValue(1); // 1 - this is fist page
+    }
 
-//    this->on_action_Rescan_triggered();
+    this->on_action_Rescan_triggered();
 }
 
 void MainWindow::on_checkBox_clicked(bool checked)
 {
-//        ui->spinBoxMax->setEnabled(!checked);
+        ui->spinBoxMax->setEnabled(!checked);
 }
