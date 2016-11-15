@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 
 
     MainWindow w;
-//    app.setWindowIcon(QIcon(":/icons/scanner.png"));
+    app.setWindowIcon(QIcon(":/icons/scanner.png"));
     w.show();
 
     return app.exec();
