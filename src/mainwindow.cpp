@@ -2,13 +2,16 @@
 #include "ui_mainwindow.h"
 #include <QImage>
 #include <QPixmap>
-//#include <QtWin>
 #include <QDebug>
 #include <QMessageBox>
 #include <QDir>
 
-//#include "Eztwain.h"
-
+#include "Eztwain.h"
+/**
+ * @brief MainWindow::MainWindow
+ * Конструктор. Соннектим кнопки, рескан, следующая страница и следующий номер.
+ * @param parent
+ */
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -39,16 +42,14 @@ void MainWindow::on_actionFullScreen_triggered(bool checked)
     if(checked)this->showFullScreen();
     else this->showNormal();
 }
-
-void MainWindow::on_actionRusssia_triggered()
-{
-
-}
-
+/**
+ * @brief MainWindow::on_action_Rescan_triggered
+ * основной слод, срабатывает при ресканане,
+ */
 void MainWindow::on_action_Rescan_triggered()
-{/*
-//    static HBITMAP data;
-    if (TWAIN_OpenDefaultSource()) {
+{
+    static HBITMAP data;
+/*    if (TWAIN_OpenDefaultSource()) {
         TWAIN_SetHideUI(1); // ask for no user interface
 //        TWAIN_SetResolution(300); // ask for 300 DPI
 //        TWAIN_SetPixelType(TWPT_GRAY);
@@ -86,8 +87,8 @@ void MainWindow::on_action_About_triggered()
 
 void MainWindow::on_action_Select_scanner_triggered()
 {
-    //TWAIN_SelectImageSource(0);
-    static QString select= "";//QString(TWAIN_SourceName());
+    TWAIN_SelectImageSource(0);
+    //static QString select= "";//QString(TWAIN_SourceName());
     //emit valueScannerChanged(select);
 }
 

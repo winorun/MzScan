@@ -8,6 +8,9 @@ class MainWindow;
 }
 
 class NumberAndPage;
+/**
+ * @brief The MainWindow class главного окна
+ */
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -19,7 +22,6 @@ signals:
   //void valueScannerChanged(const QString &text);
 private slots:
     void on_actionFullScreen_triggered(bool checked);
-    void on_actionRusssia_triggered();
     void on_action_Rescan_triggered();
     void on_action_About_triggered();
     void on_action_Select_scanner_triggered();
