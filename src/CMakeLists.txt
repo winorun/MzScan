@@ -23,7 +23,7 @@ include_directories("headers/" "../lib/")
 add_executable(${PROJECT_NAME} WIN32 ${ProjectSources} ${ProjectHeaders} ${ProjectHeadersLib} ${ProjectFormsMoc} ${ProjectResources} ${ProjectWinResources})
 
 # Use the Widgets module from Qt 5.
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets eztwain)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets eztwain Qt5::WinExtras)
 #INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION bin)
 INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .
                                 LIBRARY DESTINATION .)

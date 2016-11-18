@@ -397,6 +397,72 @@ int EZTAPI TWAIN_AcquireToClipboard(HWND hwndApp, unsigned wPixTypes)
 	return fOk;		// failed
 } // TWAIN_AcquireToClipboard
 
+static int ColorCount(int bpp)
+{
+   return 0xFFF & (1 << bpp);
+}
+
+
+static int BmiColorCount(LPBITMAPINFOHEADER lpbi)
+{
+   if (lpbi->biSize == sizeof(BITMAPCOREHEADER)) {
+      LPBITMAPCOREHEADER    lpbc = ((LPBITMAPCOREHEADER)lpbi);
+      return 1 << lpbc->bcBitCount;
+   } else if (lpbi->biClrUsed == 0) {
+      return ColorCount(lpbi->biBitCount);
+   } else {
+      return (int)lpbi->biClrUsed;
+   }
+} // BmiColorCount
+
+static int DibNumColors(VOID FAR *pv)
+{
+   return BmiColorCount((LPBITMAPINFOHEADER)pv);
+} // DibNumColors
+
+LPBYTE DibBits(LPBITMAPINFOHEADER lpdib)
+// Given a pointer to a locked DIB, return a pointer to the actual bits (pixels)
+{
+    DWORD dwColorTableSize = (DWORD)(DibNumColors(lpdib) * sizeof(RGBQUAD));
+    LPBYTE lpBits = (LPBYTE)lpdib + lpdib->biSize + dwColorTableSize;
+
+    return lpBits;
+} // end DibBits
+
+HBITMAP EZTAPI TWAIN_GetHBITMAP()
+{
+    HBITMAP hBitmap=NULL;
+    HANDLE	hDib = TWAIN_AcquireNative(0, TWAIN_ANYTYPE);
+    if (hDib) {
+        LPBITMAPINFOHEADER lpbmi = (LPBITMAPINFOHEADER)GlobalLock(hDib);
+        if (lpbmi) {
+            if (lpbmi->biCompression == BI_RGB) {
+                // uncompressed bitmap, image size might not be set
+                DWORD dwBytesPerRow = (((lpbmi->biWidth * lpbmi->biBitCount) + 31) / 32) * 4;
+                lpbmi->biSizeImage = dwBytesPerRow * lpbmi->biHeight;
+            } else if (lpbmi->biSizeImage == 0)hBitmap=NULL;
+            OutputDebugString("EZTW: Create bitmap\n");
+            const void FAR* mas = (void FAR*)DibBits(lpbmi);
+//            hBitmap= CreateBitmap(
+//                        lpbmi->biWidth,
+//                        lpbmi->biHeight,
+//                        lpbmi->biPlanes,
+//                        lpbmi->biBitCount,
+//                        mas);
+        }
+        GlobalUnlock(hDib);
+//        TWAIN_FreeNative(hDib);
+    }
+//            HBITMAP WINAPI CreateBitmap(
+//              int nWidth,    // ширина изображения
+//              int nHeight,   // высота изображения
+//              UINT cbPlanes, // количество цветовых плоскостей
+//              UINT cbBits,   // количество бит на один пиксел
+//              const void FAR* lpvBits); // указатель на массив бит
+
+//        }
+        return hBitmap;
+}
 
 int EZTAPI TWAIN_AcquireToFilename(HWND hwndApp, LPCSTR pszFile)
 // Adapted from a routine by David D. Henseler (ddh) of SOLUTIONS GmbH
@@ -438,32 +504,6 @@ int EZTAPI TWAIN_DibHeight(HANDLE hdib)
    GlobalUnlock(hdib);
    return H;
 } // TWAIN_DibHeight
-
-
-static int ColorCount(int bpp)
-{
-   return 0xFFF & (1 << bpp);
-}
-
-       
-static int BmiColorCount(LPBITMAPINFOHEADER lpbi)
-{
-   if (lpbi->biSize == sizeof(BITMAPCOREHEADER)) {
-      LPBITMAPCOREHEADER    lpbc = ((LPBITMAPCOREHEADER)lpbi);
-      return 1 << lpbc->bcBitCount;
-   } else if (lpbi->biClrUsed == 0) {
-      return ColorCount(lpbi->biBitCount);
-   } else {
-      return (int)lpbi->biClrUsed;
-   }
-} // BmiColorCount
-
-
-static int DibNumColors(VOID FAR *pv)
-{
-   return BmiColorCount((LPBITMAPINFOHEADER)pv);
-} // DibNumColors
-
 
 static size_t RowBytes(int bpp, int w)
 {
@@ -847,17 +887,6 @@ HPALETTE EZTAPI TWAIN_CreateDibPalette (HANDLE hdib)
 	}
     return hPalette;
 } // TWAIN_CreateDibPalette
-
-
-LPBYTE DibBits(LPBITMAPINFOHEADER lpdib)
-// Given a pointer to a locked DIB, return a pointer to the actual bits (pixels)
-{
-    DWORD dwColorTableSize = (DWORD)(DibNumColors(lpdib) * sizeof(RGBQUAD));
-    LPBYTE lpBits = (LPBYTE)lpdib + lpdib->biSize + dwColorTableSize;
-
-    return lpBits;
-} // end DibBits
-
 
 void EZTAPI TWAIN_DrawDibToDC(HDC hDC, int dx, int dy, int w, int h,
 									 HANDLE hdib, int sx, int sy)
@@ -1284,6 +1313,9 @@ int EZTAPI TWAIN_WriteNativeToFilename(HANDLE hdib, LPCSTR pszFile)
 	return result;
 } // TWAIN_WriteNativeToFilename
 
+unsigned int TWAIN_GetSizeImage(LPBITMAPINFOHEADER lpDIB){
+    return lpDIB->biSizeImage;
+}
 
 int WriteDibToFile(LPBITMAPINFOHEADER lpDIB, HFILE fh)
 {

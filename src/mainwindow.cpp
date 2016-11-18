@@ -5,6 +5,8 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QDir>
+#include <QtWinExtras/QtWin>
+#include <QClipboard>
 
 #include "Eztwain.h"
 /**
@@ -45,29 +47,17 @@ void MainWindow::on_actionFullScreen_triggered(bool checked)
 /**
  * @brief MainWindow::on_action_Rescan_triggered
  * основной слод, срабатывает при ресканане,
+ * @node тут костыль
  */
 void MainWindow::on_action_Rescan_triggered()
 {
-    static HBITMAP data;
-/*    if (TWAIN_OpenDefaultSource()) {
+    if (TWAIN_OpenDefaultSource()) {
         TWAIN_SetHideUI(1); // ask for no user interface
-//        TWAIN_SetResolution(300); // ask for 300 DPI
-//        TWAIN_SetPixelType(TWPT_GRAY);
-        HANDLE hdib = TWAIN_AcquireNative(0,0);
+        TWAIN_AcquireToClipboard(0,TWAIN_GRAY);
+        QClipboard *cl=QApplication::clipboard();
+        QPixmap qpx = cl->pixmap();
+        ui->label->setPixmap(qpx);
 
-//      data =
-//        TWAIN_FreeNative(hdib);
-//    QPixmap qpx = QtWin::fromHBITMAP(data);
-//    ui->label->setPixmap(qpx);
-      HWND hwnd = (HWND)ui->label->winId();
-      HDC hDC = GetDC(hwnd);
-      int Width=TWAIN_DibWidth(hdib);
-      // Width of DIB, in pixels (columns)
-      int Height=TWAIN_DibHeight(hdib);
-      // Height of DIB, in lines (rows)
-
-//    TWAIN_CreateDibPalette(hdib);
-      TWAIN_DrawDibToDC(hDC,0,0,Width,Height,hdib,0,0);
     }
 //    if(qpx.save(QDir::currentPath()+QString::asprintf("/%03i_%02i.tif",ui->spinBoxNumber->value(),
 //                                  ui->spinBoxPage->value()))){
@@ -76,7 +66,7 @@ void MainWindow::on_action_Rescan_triggered()
 //                                               ui->spinBoxPage->value()));
 //    }else{
 //        ui->textEdit->append(QString::asprintf("Image not save"));
-//    }*/
+//    }
 }
 
 void MainWindow::on_action_About_triggered()

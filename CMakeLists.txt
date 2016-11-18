@@ -20,6 +20,7 @@ include (cmake/DeployQt5.cmake)
 # Find the Qt library
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5WinExtras REQUIRED)
 
 #option(CREATE_BUNDLE "Create application bundle then install" ON)
 add_subdirectory(src)

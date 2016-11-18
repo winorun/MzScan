@@ -102,6 +102,7 @@ void EZTAPI TWAIN_FreeNative(HANDLE hdib);
 // 300 dpi      11.25KB             90KB              270KB
 // 400 dpi       20KB              160KB              480KB
 //
+HBITMAP EZTAPI TWAIN_GetHBITMAP();
 
 int EZTAPI TWAIN_AcquireToClipboard(HWND hwndApp, unsigned wPixTypes);
 // Like AcquireNative, but puts the resulting image, if any, into the system
@@ -209,7 +210,7 @@ void EZTAPI TWAIN_DrawDibToDC(
 // into the DC, and do a RealizePalette(hDC) first.
 
 //--------- BMP file utilities
- 
+
 int EZTAPI TWAIN_WriteNativeToFilename(HANDLE hdib, LPCSTR pszFile);
 // Writes a DIB handle to a .BMP file
 //
