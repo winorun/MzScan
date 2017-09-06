@@ -30,8 +30,11 @@ private slots:
 
     void on_checkBox_clicked(bool checked);
 
+    void on_action_Path_triggered();
+
 private:
     Ui::MainWindow *ui;
+    QString *path;
 };
 
 #endif // MAINWINDOW_H

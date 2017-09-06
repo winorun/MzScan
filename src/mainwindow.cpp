@@ -7,6 +7,7 @@
 #include <QDir>
 #include <QtWinExtras/QtWin>
 #include <QClipboard>
+#include <QFileDialog>
 
 #include "Eztwain.h"
 /**
@@ -27,11 +28,12 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(ui->pushButton,SIGNAL(clicked(bool)),this,SLOT(on_action_Next_Page_triggered()));
     this->connect(ui->pushButton_NextNumber,SIGNAL(clicked(bool)),this,SLOT(on_actionNext_Namber_triggered()));
     this->connect(ui->pushButton_Rescan,SIGNAL(clicked(bool)),this,SLOT(on_action_Rescan_triggered()));
-
+    path = new QString(QDir::homePath());
     }
 
 MainWindow::~MainWindow()
 {
+    delete path;
     delete ui;
 }
 
@@ -52,21 +54,24 @@ void MainWindow::on_actionFullScreen_triggered(bool checked)
 void MainWindow::on_action_Rescan_triggered()
 {
     if (TWAIN_OpenDefaultSource()) {
-        TWAIN_SetHideUI(1); // ask for no user interface
-        TWAIN_AcquireToClipboard(0,TWAIN_GRAY);
-        QClipboard *cl=QApplication::clipboard();
-        QPixmap qpx = cl->pixmap();
-        ui->label->setPixmap(qpx);
+        if(ui->hideSetting->isChecked())TWAIN_SetHideUI(1); // ask for no user interface
+        if(TWAIN_AcquireToClipboard(0,0x0002/*TWAIN_GRAY*/)){
+            QClipboard *cl=QApplication::clipboard();
+            QPixmap qpx = cl->pixmap();
+            ui->label->setPixmap(qpx);
 
+            if(qpx.save(*path+QString::asprintf("/%03i_%02i.tif",ui->spinBoxNumber->value(),
+                                          ui->spinBoxPage->value()))){
+                ui->textEdit->append("Image "+ *path + QString::asprintf("/%03i_%02i.tif save",
+                                                       ui->spinBoxNumber->value(),
+                                                       ui->spinBoxPage->value()));
+            }else{
+                ui->textEdit->append(QString::asprintf("Image not save"));
+            }
+        }else{
+           ui->textEdit->append(QString::asprintf("Image not scan"));
+        }
     }
-//    if(qpx.save(QDir::currentPath()+QString::asprintf("/%03i_%02i.tif",ui->spinBoxNumber->value(),
-//                                  ui->spinBoxPage->value()))){
-//        ui->textEdit->append(QString::asprintf("Image %03i_%02i.tif save",
-//                                               ui->spinBoxNumber->value(),
-//                                               ui->spinBoxPage->value()));
-//    }else{
-//        ui->textEdit->append(QString::asprintf("Image not save"));
-//    }
 }
 
 void MainWindow::on_action_About_triggered()
@@ -92,8 +97,12 @@ void MainWindow::on_action_Next_Page_triggered()
             ui->spinBoxNumber->stepDown();
             ui->spinBoxPage->setValue(ui->spinBoxMax->value());
         }
-    }else{
+    }else{ 
        ui->spinBoxPage->stepUp();
+       if(ui->spinBoxPage->value()>ui->spinBoxMax->value()){
+           ui->spinBoxNumber->stepUp();
+           ui->spinBoxPage->setValue(1);
+       }
     }
     this->on_action_Rescan_triggered();
 }
@@ -114,4 +123,10 @@ void MainWindow::on_actionNext_Namber_triggered()
 void MainWindow::on_checkBox_clicked(bool checked)
 {
         ui->spinBoxMax->setEnabled(!checked);
+}
+
+void MainWindow::on_action_Path_triggered()
+{
+    *path=QFileDialog::getExistingDirectory(this, tr("Open Directory"),*path,
+             QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 }
