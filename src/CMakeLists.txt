@@ -25,6 +25,20 @@ add_executable(${PROJECT_NAME} WIN32 ${ProjectSources} ${ProjectHeaders} ${Proje
 # Use the Widgets module from Qt 5.
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets eztwain Qt5::WinExtras)
 #INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION bin)
-INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .
-                                LIBRARY DESTINATION .)
-INCLUDE(CPack)
+
+if(WIN32)
+   install_qt5_platform (.)
+   install_qt5_lib (. Core Widgets Gui)
+#                         ${Qt5_REQUERED})
+#    install_qt5_V8 (bin)
+#    install_qt5_icu (bin)
+#    install_qt5_imageformats (bin ${Qt5_ImageFormats})
+#    install_qt5_qml_plugin(bin ${Qt5_QML_PLUGINS})
+
+    if(MINGW)
+        install_qt_mingw_rt (.)
+    endif(MINGW)
+endif(WIN32)
+
+INSTALL(FILES ${CMAKE_HOME_DIRECTORY}/bin/${PROJECT_NAME}.exe DESTINATION .)
+#INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX})

@@ -1,15 +1,20 @@
-cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0.2 FATAL_ERROR)
 
 set(PROJECT_NAME MzScan)
 project(${PROJECT_NAME})
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall")
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+
+#set(CMAKE_INSTALL_PREFIX ${CMAKE_HOME_DIRECTORY}/install)
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
-    add_custom_target(doxyDoc COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/doxyfile"
+    add_custom_target(doxyDoc COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_HOME_DIRECTORY}/doxyfile"
         WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
         COMMENT "Building user's documentation into doxyDoc build dir..."
     )
@@ -26,21 +31,23 @@ find_package(Qt5WinExtras REQUIRED)
 add_subdirectory(src)
 add_subdirectory(lib)
 
-if(WIN32)
-   install_qt5_platform (.)
-   install_qt5_lib (. Core Widgets Gui)
-#                         ${Qt5_REQUERED})
-#    install_qt5_V8 (bin)
-#    install_qt5_icu (bin)
-#    install_qt5_imageformats (bin ${Qt5_ImageFormats})
-#    install_qt5_qml_plugin(bin ${Qt5_QML_PLUGINS})
+SET(CPACK_PACKAGE_VERSION_MAJOR "1")
+SET(CPACK_PACKAGE_VERSION_MINOR "0")
 
-    if(MINGW)
-        install_qt_mingw_rt (.)
-    endif(MINGW)
-endif(WIN32)
+FIND_PACKAGE(Git)
+if(GIT_FOUND)
+message("git found: ${GIT_EXECUTABLE}")
+EXECUTE_PROCESS(
+      COMMAND ${GIT_EXECUTABLE}  rev-list HEAD --count
+      WORKING_DIRECTORY \${WORKING_DIRECTORY}
+      OUTPUT_VARIABLE GIT_PACKAGE_VERSION_PATCH
+  )
+STRING(STRIP ${GIT_PACKAGE_VERSION_PATCH}  CPACK_PACKAGE_VERSION_PATCH)
+message("version: ${CPACK_PACKAGE_VERSION_PATCH}")
+endif()
 
-set(CPACK_GENERATOR NSIS)
-set(CPACK_PACKAGE_NAME "MyLib")
-set(CPACK_PACKAGE_VENDOR "CMake.org")
 
+set(CPACK_PACKAGE_DESCRIPTION_FILE ${CMAKE_HOME_DIRECTORY}/COPYING.rtf)
+set(CPACK_NSIS_MUI_ICON "${CMAKE_HOME_DIRECTORY}/src/scanner.ico")
+set(CPACK_GENERATOR "NSIS")
+INCLUDE(CPack)
