@@ -44,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->connect(ui->pushButton,SIGNAL(clicked(bool)),this,SLOT(on_action_Next_Page_triggered()));
     this->connect(ui->pushButton_NextNumber,SIGNAL(clicked(bool)),this,SLOT(on_actionNext_Namber_triggered()));
     this->connect(ui->pushButton_Rescan,SIGNAL(clicked(bool)),this,SLOT(on_action_Rescan_triggered()));
+    this->connect(ui->textBrowser,SIGNAL(anchorClicked(QUrl)),this,SLOT(openLink(QUrl)));
     path = new QString(QDir::homePath());
     }
 
@@ -78,14 +79,15 @@ void MainWindow::on_action_Rescan_triggered()
 
             if(qpx.save(*path+QString::asprintf("/%03i_%02i.tif",ui->spinBoxNumber->value(),
                                           ui->spinBoxPage->value()))){
-                ui->textEdit->append("Image "+ *path + QString::asprintf("/%03i_%02i.tif save",
-                                                       ui->spinBoxNumber->value(),
-                                                       ui->spinBoxPage->value()));
+                ui->textBrowser->append(QString("Image <a href='file:///%1/%2_%3.tif'>%2_%3.tif</a> save").
+                                     arg(*path).
+                                     arg(ui->spinBoxNumber->value(),3,10,QChar('0')).
+                                     arg(ui->spinBoxPage->value(),2,10,QChar('0')));
             }else{
-                ui->textEdit->append(QString::asprintf("Image not save"));
+                ui->textBrowser->append(QString::asprintf("Image not save"));
             }
         }else{
-           ui->textEdit->append(QString::asprintf("Image not scan"));
+           ui->textBrowser->append(QString::asprintf("Image not scan"));
         }
     }
 }
@@ -106,6 +108,7 @@ void MainWindow::on_action_Select_scanner_triggered()
 
 void MainWindow::on_action_Next_Page_triggered()
 {
+    this->on_action_Rescan_triggered();
     if(!ui->checkBox->isChecked()){
         ui->spinBoxPage->stepDown();
         if(ui->spinBoxPage->value()==0)
@@ -120,11 +123,11 @@ void MainWindow::on_action_Next_Page_triggered()
            ui->spinBoxPage->setValue(1);
        }
     }
-    this->on_action_Rescan_triggered();
 }
 
 void MainWindow::on_actionNext_Namber_triggered()
 {
+    this->on_action_Rescan_triggered();
     if(!ui->checkBox->isChecked()){
        ui->spinBoxNumber->stepDown();
        ui->spinBoxPage->setValue(ui->spinBoxMax->value());
@@ -132,13 +135,19 @@ void MainWindow::on_actionNext_Namber_triggered()
         ui->spinBoxNumber->stepUp();
         ui->spinBoxPage->setValue(1); // 1 - this is fist page
     }
-
-    this->on_action_Rescan_triggered();
 }
 
 void MainWindow::on_checkBox_clicked(bool checked)
 {
         ui->spinBoxMax->setEnabled(!checked);
+}
+
+void MainWindow::openLink(const QUrl &link)
+{
+    if(link.isLocalFile()){
+        ui->label_3->setText(link.toLocalFile());
+        ui->label->loadImage(link.toLocalFile());
+    }
 }
 
 void MainWindow::on_action_Path_triggered()

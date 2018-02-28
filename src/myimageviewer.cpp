@@ -27,9 +27,10 @@ MyImageViewer::MyImageViewer(QWidget *parent):QWidget(parent)
 
 void MyImageViewer::loadImage(QString fileName)
 {
-    QPixmap pmap;
-    pmap.load(fileName);
-    pix = pmap;
+//    QPixmap pmap;
+//    if(pmap.load(fileName))pix = pmap;
+    pix.load(fileName);
+    this->repaint();
 }
 
 void MyImageViewer::paintEvent(QPaintEvent *event) {

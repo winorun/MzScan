@@ -31,7 +31,7 @@ private slots:
     void on_checkBox_clicked(bool checked);
 
     void on_action_Path_triggered();
-
+    void openLink(const QUrl &link);
 private:
     Ui::MainWindow *ui;
     QString *path;
