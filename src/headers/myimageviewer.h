@@ -16,7 +16,7 @@ public:
      * @brief MyImageViewer конструктор
      * @param parent родительский элемент
      */
-    explicit MyImageViewer(QWidget *parent=0);
+    explicit MyImageViewer(QWidget *parent=nullptr);
 public slots:
     /**
      * @brief loadImage Загружаем изображение

@@ -24,6 +24,8 @@
 #include <QtWinExtras/QtWin>
 #include <QClipboard>
 #include <QFileDialog>
+#include <QMenu>
+#include <QAction>
 
 #include "Eztwain.h"
 /**
@@ -41,9 +43,22 @@ MainWindow::MainWindow(QWidget *parent) :
 //        ui->statusBar->addWidget(lbl);
 //        this->connect(this,SIGNAL(valueScannerChanged(QString)),lbl,SLOT(setText(QString)));
     }
-    this->connect(ui->pushButton,SIGNAL(clicked(bool)),this,SLOT(on_action_Next_Page_triggered()));
-    this->connect(ui->pushButton_NextNumber,SIGNAL(clicked(bool)),this,SLOT(on_actionNext_Namber_triggered()));
-    this->connect(ui->pushButton_Rescan,SIGNAL(clicked(bool)),this,SLOT(on_action_Rescan_triggered()));
+    {
+        QMenu *menu = new QMenu(this);
+        {
+            QAction *act = new QAction("Next Number",menu);
+            menu->addAction(act);
+            this->connect(act,SIGNAL(triggered()),this,SLOT(on_actionNext_Namber_triggered()));
+        }
+        {
+            QAction *act = new QAction("Rescan",menu);
+            menu->addAction(act);
+            this->connect(act,SIGNAL(triggered()),this,SLOT(on_action_Rescan_triggered()));
+        }
+        ui->scanButton->setMenu(menu);
+        //this->ui->scanButton.
+
+    }
     this->connect(ui->textBrowser,SIGNAL(anchorClicked(QUrl)),this,SLOT(openLink(QUrl)));
     path = new QString(QDir::homePath());
     }
@@ -70,26 +85,7 @@ void MainWindow::on_actionFullScreen_triggered(bool checked)
  */
 void MainWindow::on_action_Rescan_triggered()
 {
-    if (TWAIN_OpenDefaultSource()) {
-        if(ui->hideSetting->isChecked())TWAIN_SetHideUI(1); // ask for no user interface
-        if(TWAIN_AcquireToClipboard(0,0x0002/*TWAIN_GRAY*/)){
-            QClipboard *cl=QApplication::clipboard();
-            QPixmap qpx = cl->pixmap();
-            ui->label->setPixmap(qpx);
-
-            if(qpx.save(*path+QString::asprintf("/%03i_%02i.tif",ui->spinBoxNumber->value(),
-                                          ui->spinBoxPage->value()))){
-                ui->textBrowser->append(QString("Image <a href='file:///%1/%2_%3.tif'>%2_%3.tif</a> save").
-                                     arg(*path).
-                                     arg(ui->spinBoxNumber->value(),3,10,QChar('0')).
-                                     arg(ui->spinBoxPage->value(),2,10,QChar('0')));
-            }else{
-                ui->textBrowser->append(QString::asprintf("Image not save"));
-            }
-        }else{
-           ui->textBrowser->append(QString::asprintf("Image not scan"));
-        }
-    }
+    this->scanImage(ui->spinBoxNumber->value(),ui->spinBoxPage->value());
 }
 
 void MainWindow::on_action_About_triggered()
@@ -100,11 +96,38 @@ void MainWindow::on_action_About_triggered()
 
 void MainWindow::on_action_Select_scanner_triggered()
 {
-    TWAIN_SelectImageSource(0);
+    TWAIN_SelectImageSource(nullptr);
     //static QString select= "";//QString(TWAIN_SourceName());
     //emit valueScannerChanged(select);
 }
 
+bool MainWindow::scanImage(int number,int page){
+    if (TWAIN_OpenDefaultSource()) {
+        if(ui->hideSetting->isChecked())TWAIN_SetHideUI(1);
+                else TWAIN_SetHideUI(0) ; // ask for no user interface
+        if(TWAIN_AcquireToClipboard(nullptr,0x0002/*TWAIN_GRAY*/)){
+            QClipboard *cl=QApplication::clipboard();
+            QPixmap qpx = cl->pixmap();
+            ui->label->setPixmap(qpx);
+
+            if(qpx.save(*path+QString::asprintf("/%03i_%02i.tif",number,
+                                          page))){
+                ui->textBrowser->append(QString("Image <a href='file:///%1/%2_%3.tif'>%2_%3.tif</a> save").
+                                     arg(*path).
+                                     arg(number,3,10,QChar('0')).
+                                     arg(page,2,10,QChar('0')));
+                return true;
+            }else{
+                ui->textBrowser->append(QString::asprintf("Image not save. File error"));
+                return false;
+            }
+        }else{
+           ui->textBrowser->append(QString::asprintf("Image not scan. Scan error"));
+           return false;
+        }
+    }
+    return false;
+}
 
 void MainWindow::on_action_Next_Page_triggered()
 {
@@ -155,3 +178,5 @@ void MainWindow::on_action_Path_triggered()
     *path=QFileDialog::getExistingDirectory(this, tr("Open Directory"),*path,
              QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 }
+
+

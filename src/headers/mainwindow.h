@@ -15,8 +15,11 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+private:
+    bool scanImage(int number, int page);
+
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 signals:
   //void valueScannerChanged(const QString &text);
