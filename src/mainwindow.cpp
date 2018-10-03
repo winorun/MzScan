@@ -50,15 +50,13 @@ MainWindow::MainWindow(QWidget *parent) :
             menu->addAction(act);
             this->connect(act,SIGNAL(triggered()),this,SLOT(on_actionNext_Namber_triggered()));
         }
-        {
-            QAction *act = new QAction("Rescan",menu);
-            menu->addAction(act);
-            this->connect(act,SIGNAL(triggered()),this,SLOT(on_action_Rescan_triggered()));
-        }
+        menu->addAction(ui->action_Rescan);
         ui->scanButton->setMenu(menu);
         //this->ui->scanButton.
 
     }
+    ui->statusBar->addPermanentWidget(ui->label_2);
+    ui->statusBar->addPermanentWidget(ui->spinBoxMax);
     this->connect(ui->textBrowser,SIGNAL(anchorClicked(QUrl)),this,SLOT(openLink(QUrl)));
     path = new QString(QDir::homePath());
     }
@@ -85,7 +83,7 @@ void MainWindow::on_actionFullScreen_triggered(bool checked)
  */
 void MainWindow::on_action_Rescan_triggered()
 {
-    this->scanImage(ui->spinBoxNumber->value(),ui->spinBoxPage->value());
+    this->scanImage(this->lastNumber,this->lastPage);
 }
 
 void MainWindow::on_action_About_triggered()
@@ -131,26 +129,30 @@ bool MainWindow::scanImage(int number,int page){
 
 void MainWindow::on_action_Next_Page_triggered()
 {
-    this->on_action_Rescan_triggered();
-    if(!ui->checkBox->isChecked()){
-        ui->spinBoxPage->stepDown();
-        if(ui->spinBoxPage->value()==0)
-        {
-            ui->spinBoxNumber->stepDown();
-            ui->spinBoxPage->setValue(ui->spinBoxMax->value());
+//    this->on_action_Rescan_triggered();
+    this->lastNumber=ui->spinBoxNumber->value();
+    this->lastPage=ui->spinBoxPage->value();
+    this->ui->action_Rescan->setEnabled(true);
+    if(this->scanImage(ui->spinBoxNumber->value(),ui->spinBoxPage->value())){
+        if(!ui->checkBox->isChecked()){
+            ui->spinBoxPage->stepDown();
+            if(ui->spinBoxPage->value()==0)
+            {
+                ui->spinBoxNumber->stepDown();
+                ui->spinBoxPage->setValue(ui->spinBoxMax->value());
+            }
+        }else{
+           ui->spinBoxPage->stepUp();
+           if(ui->spinBoxPage->value()>ui->spinBoxMax->value()){
+               ui->spinBoxNumber->stepUp();
+               ui->spinBoxPage->setValue(1);
+           }
         }
-    }else{ 
-       ui->spinBoxPage->stepUp();
-       if(ui->spinBoxPage->value()>ui->spinBoxMax->value()){
-           ui->spinBoxNumber->stepUp();
-           ui->spinBoxPage->setValue(1);
-       }
-    }
+    };
 }
 
 void MainWindow::on_actionNext_Namber_triggered()
 {
-    this->on_action_Rescan_triggered();
     if(!ui->checkBox->isChecked()){
        ui->spinBoxNumber->stepDown();
        ui->spinBoxPage->setValue(ui->spinBoxMax->value());

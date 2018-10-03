@@ -17,7 +17,8 @@ class MainWindow : public QMainWindow
 
 private:
     bool scanImage(int number, int page);
-
+    int lastPage;
+    int lastNumber;
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();

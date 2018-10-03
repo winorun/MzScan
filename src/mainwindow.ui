@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>401</width>
-    <height>542</height>
+    <width>473</width>
+    <height>365</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,13 +23,25 @@
    <enum>Qt::LeftToRight</enum>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
+      <property name="opaqueResize">
+       <bool>true</bool>
+      </property>
+      <property name="handleWidth">
+       <number>3</number>
+      </property>
       <widget class="QScrollArea" name="scrollArea">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="horizontalScrollBarPolicy">
         <enum>Qt::ScrollBarAsNeeded</enum>
        </property>
@@ -48,12 +60,19 @@
           <x>0</x>
           <y>0</y>
           <width>69</width>
-          <height>469</height>
+          <height>292</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="MyImageViewer" name="label" native="true"/>
+          <widget class="MyImageViewer" name="label" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -62,6 +81,12 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QLabel" name="label_4">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="font">
            <font>
             <family>Courier New</family>
@@ -83,6 +108,15 @@
         </item>
         <item>
          <widget class="QTextBrowser" name="textBrowser">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="documentTitle">
            <string/>
           </property>
@@ -106,17 +140,23 @@ p, li { white-space: pre-wrap; }
         </item>
         <item>
          <widget class="QLabel" name="label_3">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
            <string/>
           </property>
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <widget class="QCheckBox" name="checkBox">
             <property name="text">
-             <string>от начала к концу</string>
+             <string>in ascending order</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -126,7 +166,7 @@ p, li { white-space: pre-wrap; }
           <item>
            <widget class="QCheckBox" name="hideSetting">
             <property name="text">
-             <string>Скрывать настройки</string>
+             <string>Hide Setting</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -140,7 +180,7 @@ p, li { white-space: pre-wrap; }
           <item>
            <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>MaxPage</string>
+             <string>pages in the newspaper</string>
             </property>
            </widget>
           </item>
@@ -153,6 +193,21 @@ p, li { white-space: pre-wrap; }
           </item>
           <item>
            <widget class="QToolButton" name="scanButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Courier New</family>
+              <pointsize>20</pointsize>
+              <weight>75</weight>
+              <italic>true</italic>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
              <string>Scan</string>
             </property>
@@ -200,7 +255,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>401</width>
+     <width>473</width>
      <height>21</height>
     </rect>
    </property>
@@ -257,6 +312,9 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
   <action name="action_Rescan">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Rescan</string>
    </property>
@@ -289,11 +347,17 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
   <action name="actionRusssia">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Russsia</string>
    </property>
   </action>
   <action name="actionEnglish">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>English</string>
    </property>
