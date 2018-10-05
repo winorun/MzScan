@@ -19,6 +19,8 @@ private:
     bool scanImage(int number, int page);
     int lastPage;
     int lastNumber;
+    int scanOrden;
+    void nextNumber();
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -32,10 +34,14 @@ private slots:
     void on_action_Next_Page_triggered();
     void on_actionNext_Namber_triggered();
 
-    void on_checkBox_clicked(bool checked);
-
     void on_action_Path_triggered();
     void openLink(const QUrl &link);
+    void on_actionReverse_triggered();
+
+    void on_actionNormal_triggered();
+
+    void on_actionArchive_triggered();
+
 private:
     Ui::MainWindow *ui;
     QString *path;

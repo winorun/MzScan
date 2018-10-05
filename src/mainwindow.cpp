@@ -26,8 +26,16 @@
 #include <QFileDialog>
 #include <QMenu>
 #include <QAction>
+#include <QActionGroup>
 
 #include "Eztwain.h"
+
+
+#define REVERSE_ORDER 1
+#define NORMAL_ORDER 2
+#define ARCHIVE_ORDER 0
+
+
 /**
  * @brief MainWindow::MainWindow
  * Конструктор. Соннектим кнопки, рескан, следующая страница и следующий номер.
@@ -55,6 +63,14 @@ MainWindow::MainWindow(QWidget *parent) :
         //this->ui->scanButton.
 
     }
+    {
+        QActionGroup * actionGroup = new QActionGroup(this);
+        actionGroup->setExclusive(true);
+        actionGroup->addAction(ui->actionArchive);
+        actionGroup->addAction(ui->actionNormal);
+        actionGroup->addAction(ui->actionReverse);
+    }
+    scanOrden=ARCHIVE_ORDER;
     ui->statusBar->addPermanentWidget(ui->label_2);
     ui->statusBar->addPermanentWidget(ui->spinBoxMax);
     this->connect(ui->textBrowser,SIGNAL(anchorClicked(QUrl)),this,SLOT(openLink(QUrl)));
@@ -76,6 +92,16 @@ void MainWindow::on_actionFullScreen_triggered(bool checked)
     if(checked)this->showFullScreen();
     else this->showNormal();
 }
+
+void MainWindow::nextNumber(){
+    if(scanOrden&2){
+         ui->spinBoxNumber->stepUp();
+    }else{
+        ui->spinBoxNumber->stepDown();
+    }
+
+}
+
 /**
  * @brief MainWindow::on_action_Rescan_triggered
  * основной слод, срабатывает при ресканане,
@@ -133,39 +159,40 @@ void MainWindow::on_action_Next_Page_triggered()
     this->lastNumber=ui->spinBoxNumber->value();
     this->lastPage=ui->spinBoxPage->value();
     this->ui->action_Rescan->setEnabled(true);
-    if(this->scanImage(ui->spinBoxNumber->value(),ui->spinBoxPage->value())){
-        if(!ui->checkBox->isChecked()){
+    if(this->scanImage(ui->spinBoxNumber->value(),ui->spinBoxPage->value())){ 
+
+        if(scanOrden&1){
             ui->spinBoxPage->stepDown();
             if(ui->spinBoxPage->value()==0)
             {
-                ui->spinBoxNumber->stepDown();
+                nextNumber();
                 ui->spinBoxPage->setValue(ui->spinBoxMax->value());
             }
-        }else{
-           ui->spinBoxPage->stepUp();
-           if(ui->spinBoxPage->value()>ui->spinBoxMax->value()){
-               ui->spinBoxNumber->stepUp();
-               ui->spinBoxPage->setValue(1);
-           }
+        }else{     
+            ui->spinBoxPage->stepUp();
+            if(ui->spinBoxPage->value()>ui->spinBoxMax->value()){
+                nextNumber();
+                ui->spinBoxPage->setValue(1);
+            }
         }
+
     };
 }
 
 void MainWindow::on_actionNext_Namber_triggered()
 {
-    if(!ui->checkBox->isChecked()){
-       ui->spinBoxNumber->stepDown();
+    nextNumber();
+    if(scanOrden&1){
        ui->spinBoxPage->setValue(ui->spinBoxMax->value());
     }else{
-        ui->spinBoxNumber->stepUp();
         ui->spinBoxPage->setValue(1); // 1 - this is fist page
     }
 }
 
-void MainWindow::on_checkBox_clicked(bool checked)
-{
-        ui->spinBoxMax->setEnabled(!checked);
-}
+//void MainWindow::on_checkBox_clicked(bool checked)
+//{
+//        ui->spinBoxMax->setEnabled(!checked);
+//}
 
 void MainWindow::openLink(const QUrl &link)
 {
@@ -182,3 +209,18 @@ void MainWindow::on_action_Path_triggered()
 }
 
 
+
+void MainWindow::on_actionReverse_triggered()
+{
+    scanOrden=REVERSE_ORDER;
+}
+
+void MainWindow::on_actionNormal_triggered()
+{
+    scanOrden=NORMAL_ORDER;
+}
+
+void MainWindow::on_actionArchive_triggered()
+{
+    scanOrden=ARCHIVE_ORDER;
+}
